@@ -23,9 +23,10 @@ app.use(async (ctx, next) => {
         const query = ctx.request.query;
         if (query.project) {
             let buildResult;
-            buildResult = await build(query.project).catch(e => e);
             if (query.vueVersion == "2") {
                 buildResult = await buildV2(query.project).catch(e => e);
+            } else {
+                buildResult = await build(query.project).catch(e => e);
             }
             if (buildResult) {
                 const packageResult = await packageDist(query.project).catch(e => e);
