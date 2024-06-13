@@ -4,6 +4,7 @@
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const { build } = require('./build');
+const { buildV2 } = require('./buildV2');
 const { packageDist } = require('./packageDist');
 
 const LISTEN_PORT = 3000;
@@ -21,7 +22,11 @@ app.use(async (ctx, next) => {
     if (ctx.path === '/build') {
         const query = ctx.request.query;
         if (query.project) {
-            const buildResult = await build(query.project).catch(e => e);
+            let buildResult;
+            buildResult = await build(query.project).catch(e => e);
+            if (query.vueVersion == "2") {
+                buildResult = await buildV2(query.project).catch(e => e);
+            }
             if (buildResult) {
                 const packageResult = await packageDist(query.project).catch(e => e);
                 ctx.body = packageResult;
